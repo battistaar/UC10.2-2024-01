@@ -1,4 +1,5 @@
 export interface Record {
+  id: string;
   name: string;
   duration: number;
   billable: boolean;
