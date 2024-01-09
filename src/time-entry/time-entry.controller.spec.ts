@@ -1,13 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TimeEntryController } from './time-entry.controller';
-import { TimeEntryDataSource } from './time-entry.ds.service';
+import { TimeEntryDataSource } from './datasource/time-entry.ds.service';
 import { TimeEntryMockDataSource } from './mocks/time-entry.ds.mock.service';
 import { Types } from 'mongoose';
-import { TimeEntry } from './time-entry.schema';
+import { TimeEntry } from './entities/time-entry.schema';
+import { ExactTimeEntryDurationService } from './duration/exact-duration.service';
+import { TimeEntryDurationService } from './duration/duration.service';
 
 describe('TimeEntryController', () => {
   let controller: TimeEntryController;
   let dataSource: TimeEntryMockDataSource;
+  let durationSrv: TimeEntryDurationService;
 
   beforeEach(async () => {
     dataSource = new TimeEntryMockDataSource();
@@ -16,10 +19,13 @@ describe('TimeEntryController', () => {
       providers: [{
         provide: TimeEntryDataSource,
         useValue: dataSource
-      }],
+      },
+      {provide: TimeEntryDurationService, useClass: ExactTimeEntryDurationService}
+    ],
     }).compile();
 
     controller = app.get<TimeEntryController>(TimeEntryController);
+    durationSrv = app.get<TimeEntryDurationService>(TimeEntryDurationService);
 
   });
 
@@ -42,8 +48,8 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-
-      return controller.list().then(result => {
+      
+      return controller.list().then(result => {  
         expect(result.length).toBe(records.length);
       })
     });
@@ -74,8 +80,12 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-
+      const durationSpy = jest.spyOn(durationSrv, 'getDuration');
       return controller.list().then(result => {
+        expect(durationSpy).toHaveBeenCalledTimes(records.length);
+        for(let i = 0; i < records.length; i++) {
+          expect(durationSpy).toHaveBeenNthCalledWith(i + 1, records[i].start, records[i].end)
+        }
         expect(result[0].amount).toBeGreaterThan(0);
         expect(result[1].amount).toBe(0);
         expect(result[2].amount).toBeGreaterThan(0);

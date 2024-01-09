@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { TimeEntry } from './time-entry.schema';
+import { TimeEntry } from '../entities/time-entry.schema';
 import { Model, Types } from 'mongoose';
-import { CreateTimeEntryDTO } from './time-entry.dto';
+import { CreateTimeEntryDTO } from '../entities/time-entry.dto';
 import { TimeEntryDataSource } from './time-entry.ds.service';
 
 @Injectable()

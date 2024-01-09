@@ -1,4 +1,4 @@
-import { TimeEntryDataSource } from './time-entry.ds.service';
+import { TimeEntryDataSource } from './datasource/time-entry.ds.service';
 import {
   Body,
   Controller,
@@ -10,19 +10,22 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CalculatedTimeEntry } from './time-entry.entity';
-import { CreateTimeEntryDTO } from './time-entry.dto';
+import { CalculatedTimeEntry } from './entities/time-entry.entity';
+import { CreateTimeEntryDTO } from './entities/time-entry.dto';
+import { TimeEntryDurationService } from './duration/duration.service';
 
 @Controller('time-entries')
 export class TimeEntryController {
-  constructor(protected readonly dataSorce: TimeEntryDataSource) {}
+  constructor(
+    protected readonly dataSorce: TimeEntryDataSource,
+    protected readonly durationSrv: TimeEntryDurationService) {}
 
   @Get()
   async list(): Promise<CalculatedTimeEntry[]> {
     const list = await this.dataSorce.list();
 
     return list.map((e) => {
-      const duration = (e.end.getTime() - e.start.getTime()) / (1000 * 60 * 60);
+      const duration = this.durationSrv.getDuration(e.start, e.end);
       return {
         ...e,
         amount: e.billable ? duration * 60 : 0,
@@ -36,7 +39,7 @@ export class TimeEntryController {
     if (!record) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    const duration = (record.end.getTime() - record.start.getTime()) / (1000 * 60 * 60);
+    const duration = this.durationSrv.getDuration(record.start, record.end);
     return {
       ...record,
       amount: record.billable ? duration * 60 : 0,
@@ -48,7 +51,7 @@ export class TimeEntryController {
   async create(@Body() createTimeEntryDTO: CreateTimeEntryDTO) {
     const record = await this.dataSorce.add(createTimeEntryDTO);
   
-    const duration = (record.end.getTime() - record.start.getTime()) / (1000 * 60 * 60);
+    const duration = this.durationSrv.getDuration(record.start, record.end);
     return {
       ...record,
       amount: record.billable ? duration * 60 : 0,
