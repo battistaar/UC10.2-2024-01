@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CodeReuseController } from './code-reuse/code-reuse.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { TimeEntryModule } from './time-entry/time-entry.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, CodeReuseController],
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost/time-tracker'),
+    TimeEntryModule
+  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
