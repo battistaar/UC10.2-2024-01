@@ -1,4 +1,4 @@
-import { TimeEntryDataSource } from './time-entry-datasource.service';
+import { TimeEntryDataSource } from './time-entry.ds.service';
 import {
   Body,
   Controller,

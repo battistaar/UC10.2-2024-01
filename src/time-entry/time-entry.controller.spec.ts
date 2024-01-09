@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TimeEntryController } from './time-entry.controller';
-import { TimeEntryDataSource } from './time-entry-datasource.service';
-import { MockTimeEntryDataSource } from './mocks/time-entry-datasoruce.mock';
+import { TimeEntryDataSource } from './time-entry.ds.service';
+import { TimeEntryMockDataSource } from './mocks/time-entry.ds.mock.service';
 import { Types } from 'mongoose';
 import { TimeEntry } from './time-entry.schema';
 
 describe('TimeEntryController', () => {
   let controller: TimeEntryController;
-  let dataSource: MockTimeEntryDataSource;
+  let dataSource: TimeEntryMockDataSource;
 
   beforeEach(async () => {
-    dataSource = new MockTimeEntryDataSource();
+    dataSource = new TimeEntryMockDataSource();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TimeEntryController],
       providers: [{

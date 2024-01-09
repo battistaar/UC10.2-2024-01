@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { TimeEntry } from '../time-entry.schema';
 import { Types } from 'mongoose';
 import { CreateTimeEntryDTO } from '../time-entry.dto';
+import { TimeEntryDataSource } from '../time-entry.ds.service';
 
 @Injectable()
-export class MockTimeEntryDataSource {
+export class TimeEntryMockDataSource extends TimeEntryDataSource {
   private data: TimeEntry[] = [];
 
   constructor(data: TimeEntry[] = []) {
+    super();
     this.data = data;
   }
 
