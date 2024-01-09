@@ -1,3 +1,4 @@
+import { TimeEntryDataSource } from './time-entry-datasource.service';
 import {
   Body,
   Controller,
@@ -9,27 +10,21 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { TimeEntry, TimeEntryDocument } from './time-entry.schema';
-import { Model } from 'mongoose';
 import { CalculatedTimeEntry } from './time-entry.entity';
 import { CreateTimeEntryDTO } from './time-entry.dto';
 
 @Controller('time-entries')
 export class TimeEntryController {
-  constructor(
-    @InjectModel(TimeEntry.name)
-    private readonly timeEntryModel: Model<TimeEntry>,
-  ) {}
+  constructor(protected readonly dataSorce: TimeEntryDataSource) {}
 
   @Get()
   async list(): Promise<CalculatedTimeEntry[]> {
-    const list: TimeEntryDocument[] = await this.timeEntryModel.find();
+    const list = await this.dataSorce.list();
 
     return list.map((e) => {
       const duration = (e.end.getTime() - e.start.getTime()) / (1000 * 60 * 60);
       return {
-        ...e.toObject(),
+        ...e,
         amount: e.billable ? duration * 60 : 0,
       };
     });
@@ -37,13 +32,13 @@ export class TimeEntryController {
 
   @Get(':id')
   async detail(@Param('id') id: string) {
-    const record: TimeEntryDocument = await this.timeEntryModel.findById(id);
+    const record = await this.dataSorce.get(id);
     if (!record) {
-      throw new HttpException('Not fount', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
     const duration = (record.end.getTime() - record.start.getTime()) / (1000 * 60 * 60);
     return {
-      ...record.toObject(),
+      ...record,
       amount: record.billable ? duration * 60 : 0,
     };
   }
@@ -51,11 +46,11 @@ export class TimeEntryController {
   @Post()
   @UsePipes(new ValidationPipe({transform: true}))
   async create(@Body() createTimeEntryDTO: CreateTimeEntryDTO) {
-    const record: TimeEntryDocument = await this.timeEntryModel.create(createTimeEntryDTO);
+    const record = await this.dataSorce.add(createTimeEntryDTO);
   
     const duration = (record.end.getTime() - record.start.getTime()) / (1000 * 60 * 60);
     return {
-      ...record.toObject(),
+      ...record,
       amount: record.billable ? duration * 60 : 0,
     };
   }
