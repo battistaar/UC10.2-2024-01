@@ -6,11 +6,14 @@ import { Types } from 'mongoose';
 import { TimeEntry } from './entities/time-entry.schema';
 import { ExactTimeEntryDurationService } from './duration/exact-duration.service';
 import { TimeEntryDurationService } from './duration/duration.service';
+import { FixedAmountService } from './amount/fixed-amount.service';
+import { TimeEntryAmountService } from './amount/amount.service';
 
 describe('TimeEntryController', () => {
   let controller: TimeEntryController;
   let dataSource: TimeEntryMockDataSource;
   let durationSrv: TimeEntryDurationService;
+  let amountSrv: TimeEntryAmountService;
 
   beforeEach(async () => {
     dataSource = new TimeEntryMockDataSource();
@@ -20,13 +23,14 @@ describe('TimeEntryController', () => {
         provide: TimeEntryDataSource,
         useValue: dataSource
       },
-      {provide: TimeEntryDurationService, useClass: ExactTimeEntryDurationService}
+      {provide: TimeEntryDurationService, useClass: ExactTimeEntryDurationService},
+      {provide: TimeEntryAmountService, useClass: FixedAmountService}
     ],
     }).compile();
 
     controller = app.get<TimeEntryController>(TimeEntryController);
     durationSrv = app.get<TimeEntryDurationService>(TimeEntryDurationService);
-
+    amountSrv = app.get<TimeEntryAmountService>(TimeEntryAmountService);
   });
 
   describe('list',  () => {
@@ -81,10 +85,13 @@ describe('TimeEntryController', () => {
       ];
       dataSource.setRecords(records);
       const durationSpy = jest.spyOn(durationSrv, 'getDuration');
+      const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
+
       return controller.list().then(result => {
         expect(durationSpy).toHaveBeenCalledTimes(records.length);
+        expect(amountSpy).toHaveBeenCalledTimes(2);
         for(let i = 0; i < records.length; i++) {
-          expect(durationSpy).toHaveBeenNthCalledWith(i + 1, records[i].start, records[i].end)
+          expect(durationSpy).toHaveBeenNthCalledWith(i + 1, records[i].start, records[i].end);
         }
         expect(result[0].amount).toBeGreaterThan(0);
         expect(result[1].amount).toBe(0);
@@ -113,7 +120,7 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-
+      
       return controller.detail(records[1].id.toString()).then(result => {
         expect(result.id).toBe(records[1].id);
         expect(result.amount).toBeDefined();
@@ -131,8 +138,12 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-
+      const durationSpy = jest.spyOn(durationSrv, 'getDuration');
+      const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
       return controller.detail(records[0].id.toString()).then(result => {
+        expect(durationSpy).toHaveBeenCalledWith(records[0].start, records[0].end);
+        expect(amountSpy).toHaveBeenCalled();
+
         expect(result.amount).toBeGreaterThan(0);
       })
     });
@@ -147,8 +158,11 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-
+      const durationSpy = jest.spyOn(durationSrv, 'getDuration');
+      const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
       return controller.detail(records[0].id.toString()).then(result => {
+        expect(durationSpy).toHaveBeenCalledWith(records[0].start, records[0].end);
+        expect(amountSpy).not.toHaveBeenCalled();
         expect(result.amount).toBe(0);
       })
     });

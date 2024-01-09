@@ -3,7 +3,7 @@ import { ExactTimeEntryDurationService } from "./exact-duration.service"
 describe('ExactDurationService', () => {
   let srv: ExactTimeEntryDurationService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     srv = new ExactTimeEntryDurationService();
   })
   it('should calculate 0.5h', () => {
