@@ -8,6 +8,7 @@ import { TimeEntryDurationService } from "./duration/duration.service";
 import { ExactTimeEntryDurationService } from "./duration/exact-duration.service";
 import { TimeEntryAmountService } from "./amount/amount.service";
 import { FixedAmountService } from "./amount/fixed-amount.service";
+import { TimeEntryResultFactory } from "./entities/time-entry-result.factory";
 
 @Module({
   imports: [MongooseModule.forFeature([{name: TimeEntry.name, schema: TimeEntrySchema}])],
@@ -15,7 +16,8 @@ import { FixedAmountService } from "./amount/fixed-amount.service";
   providers: [
     {provide: TimeEntryDataSource, useClass: TimeEntryMongoDataSource},
     {provide: TimeEntryDurationService, useClass: ExactTimeEntryDurationService},
-    {provide: TimeEntryAmountService, useClass: FixedAmountService}
+    {provide: TimeEntryAmountService, useClass: FixedAmountService},
+    TimeEntryResultFactory
   ]
 })
 export class TimeEntryModule {}

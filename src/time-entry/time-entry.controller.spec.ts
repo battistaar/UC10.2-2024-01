@@ -8,12 +8,12 @@ import { ExactTimeEntryDurationService } from './duration/exact-duration.service
 import { TimeEntryDurationService } from './duration/duration.service';
 import { FixedAmountService } from './amount/fixed-amount.service';
 import { TimeEntryAmountService } from './amount/amount.service';
+import { TimeEntryResultFactory } from './entities/time-entry-result.factory';
 
 describe('TimeEntryController', () => {
   let controller: TimeEntryController;
   let dataSource: TimeEntryMockDataSource;
-  let durationSrv: TimeEntryDurationService;
-  let amountSrv: TimeEntryAmountService;
+  let resultFactory: TimeEntryResultFactory;
 
   beforeEach(async () => {
     dataSource = new TimeEntryMockDataSource();
@@ -24,17 +24,17 @@ describe('TimeEntryController', () => {
         useValue: dataSource
       },
       {provide: TimeEntryDurationService, useClass: ExactTimeEntryDurationService},
-      {provide: TimeEntryAmountService, useClass: FixedAmountService}
+      {provide: TimeEntryAmountService, useClass: FixedAmountService},
+      TimeEntryResultFactory
     ],
     }).compile();
 
     controller = app.get<TimeEntryController>(TimeEntryController);
-    durationSrv = app.get<TimeEntryDurationService>(TimeEntryDurationService);
-    amountSrv = app.get<TimeEntryAmountService>(TimeEntryAmountService);
+    resultFactory = app.get<TimeEntryResultFactory>(TimeEntryResultFactory);
   });
 
   describe('list',  () => {
-    it('should return a list of elements with amount"', async () => {
+    it('should return a list of elements"', async () => {
       const records: TimeEntry[] = [
         {
           id: new Types.ObjectId(),
@@ -52,52 +52,14 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-      
-      return controller.list().then(result => {  
+      const spyFactory = jest.fn().mockResolvedValue({});
+      jest.spyOn(resultFactory, 'getFactory').mockReturnValue(spyFactory);
+      return controller.list().then(result => {
+        for(let i = 0; i < records.length; i++) {
+          expect(spyFactory).toHaveBeenNthCalledWith(i+1, records[i]);
+        }
         expect(result.length).toBe(records.length);
       })
-    });
-
-    it('should calculate billable amounts"', async () => {
-      const records: TimeEntry[] = [
-        {
-          id: new Types.ObjectId(),
-          description: 'Test1',
-          start: new Date('2024-01-10T10:00:00.000Z'),
-          end: new Date('2024-01-10T11:00:00.000Z'),
-          billable: true
-        },
-        {
-          id: new Types.ObjectId(),
-          description: 'Test2',
-          start: new Date('2024-01-10T11:00:00.000Z'),
-          end: new Date('2024-01-10T13:00:00.000Z'),
-          billable: false
-        },
-
-        {
-          id: new Types.ObjectId(),
-          description: 'Test2',
-          start: new Date('2024-01-13T10:00:00.000Z'),
-          end: new Date('2024-01-14T10:00:00.000Z'),
-          billable: true
-        }
-      ];
-      dataSource.setRecords(records);
-      const durationSpy = jest.spyOn(durationSrv, 'getDuration');
-      const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
-
-      return controller.list().then(result => {
-        expect(durationSpy).toHaveBeenCalledTimes(records.length);
-        expect(amountSpy).toHaveBeenCalledTimes(2);
-        for(let i = 0; i < records.length; i++) {
-          expect(durationSpy).toHaveBeenNthCalledWith(i + 1, records[i].start, records[i].end);
-        }
-        expect(result[0].amount).toBeGreaterThan(0);
-        expect(result[1].amount).toBe(0);
-        expect(result[2].amount).toBeGreaterThan(0);
-      })
-
     });
   });
 
@@ -120,50 +82,11 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-      
+      const spyFactory = jest.fn().mockResolvedValue({});
+      jest.spyOn(resultFactory, 'getFactory').mockReturnValue(spyFactory);
       return controller.detail(records[1].id.toString()).then(result => {
-        expect(result.id).toBe(records[1].id);
-        expect(result.amount).toBeDefined();
-      })
-    });
-
-    it('should calculate billable amounts"', async () => {
-      const records: TimeEntry[] = [
-        {
-          id: new Types.ObjectId(),
-          description: 'Test1',
-          start: new Date('2024-01-10T10:00:00.000Z'),
-          end: new Date('2024-01-10T11:00:00.000Z'),
-          billable: true
-        }
-      ];
-      dataSource.setRecords(records);
-      const durationSpy = jest.spyOn(durationSrv, 'getDuration');
-      const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
-      return controller.detail(records[0].id.toString()).then(result => {
-        expect(durationSpy).toHaveBeenCalledWith(records[0].start, records[0].end);
-        expect(amountSpy).toHaveBeenCalled();
-
-        expect(result.amount).toBeGreaterThan(0);
-      })
-    });
-    it('should leave non billable amounts to 0"', async () => {
-      const records: TimeEntry[] = [
-        {
-          id: new Types.ObjectId(),
-          description: 'Test1',
-          start: new Date('2024-01-10T10:00:00.000Z'),
-          end: new Date('2024-01-10T11:00:00.000Z'),
-          billable: false
-        }
-      ];
-      dataSource.setRecords(records);
-      const durationSpy = jest.spyOn(durationSrv, 'getDuration');
-      const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
-      return controller.detail(records[0].id.toString()).then(result => {
-        expect(durationSpy).toHaveBeenCalledWith(records[0].start, records[0].end);
-        expect(amountSpy).not.toHaveBeenCalled();
-        expect(result.amount).toBe(0);
+        expect(spyFactory).toHaveBeenCalledWith(records[1]);
+        expect(result).toStrictEqual({});
       })
     });
 
@@ -184,33 +107,18 @@ describe('TimeEntryController', () => {
   });
 
   describe('create', () => {
-    it('should add a new billable record', async () => {
+    it('should add a new record', async () => {
       const record = {
         description: 'Test1',
         start: new Date('2024-01-10T10:00:00.000Z'),
         end: new Date('2024-01-10T11:00:00.000Z'),
         billable: true
       }
+      const spyFactory = jest.fn().mockResolvedValue({});
+      jest.spyOn(resultFactory, 'getFactory').mockReturnValue(spyFactory);
       return controller.create(record).then(result =>{
-        expect(result.id).toBeDefined();
-        expect(result.description).toBe(record.description);
-        expect(result.billable).toBe(true);
-        expect(result.amount).toBeGreaterThan(0);
-      })
-    });
-
-    it('should add a new non billable record', async () => {
-      const record = {
-        description: 'Test1',
-        start: new Date('2024-01-10T10:00:00.000Z'),
-        end: new Date('2024-01-10T11:00:00.000Z'),
-        billable: false
-      }
-      return controller.create(record).then(result =>{
-        expect(result.id).toBeDefined();
-        expect(result.description).toBe(record.description);
-        expect(result.billable).toBe(false);
-        expect(result.amount).toBe(0);
+        expect(spyFactory).toHaveBeenCalled();
+        expect(result).toStrictEqual({});
       })
     });
   })

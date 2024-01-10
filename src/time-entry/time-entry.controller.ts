@@ -12,26 +12,21 @@ import {
 } from '@nestjs/common';
 import { CalculatedTimeEntry } from './entities/time-entry.entity';
 import { CreateTimeEntryDTO } from './entities/time-entry.dto';
-import { TimeEntryDurationService } from './duration/duration.service';
-import { TimeEntryAmountService } from './amount/amount.service';
+import { TimeEntryResultFactory } from './entities/time-entry-result.factory';
 
 @Controller('time-entries')
 export class TimeEntryController {
   constructor(
     protected readonly dataSorce: TimeEntryDataSource,
-    protected readonly durationSrv: TimeEntryDurationService,
-    protected readonly amountSrv: TimeEntryAmountService) {}
+    protected readonly resultFactory: TimeEntryResultFactory) {}
 
   @Get()
   async list(): Promise<CalculatedTimeEntry[]> {
     const list = await this.dataSorce.list();
 
+    const resultFactory = this.resultFactory.getFactory();
     return list.map((e) => {
-      const duration = this.durationSrv.getDuration(e.start, e.end);
-      return {
-        ...e,
-        amount: e.billable ? this.amountSrv.calcAmount(duration) : 0,
-      };
+      return resultFactory(e);
     });
   }
 
@@ -41,22 +36,16 @@ export class TimeEntryController {
     if (!record) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    const duration = this.durationSrv.getDuration(record.start, record.end);
-    return {
-      ...record,
-      amount: record.billable ? this.amountSrv.calcAmount(duration) : 0,
-    };
+    const resultFactory = this.resultFactory.getFactory();
+    return resultFactory(record);
   }
 
   @Post()
   @UsePipes(new ValidationPipe({transform: true}))
   async create(@Body() createTimeEntryDTO: CreateTimeEntryDTO) {
     const record = await this.dataSorce.add(createTimeEntryDTO);
-  
-    const duration = this.durationSrv.getDuration(record.start, record.end);
-    return {
-      ...record,
-      amount: record.billable ? this.amountSrv.calcAmount(duration) : 0,
-    };
+    const resultFactory = this.resultFactory.getFactory();
+
+    return resultFactory(record);
   }
 }
