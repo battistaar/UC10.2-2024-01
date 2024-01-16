@@ -11,13 +11,11 @@ export class TimeEntryResultFactory {
     protected readonly amountSrv: TimeEntryAmountService
   ) {}
 
-  getFactory() {
-    return (timeEntry: TimeEntry): TimeEntryResultDTO => {
-      const duration = this.durationSrv.getDuration(timeEntry.start, timeEntry.end);
-      return {
-        ...timeEntry,
-        amount: timeEntry.billable ? this.amountSrv.calcAmount(duration) : 0,
-      };
-    }
+  getResultEntity(timeEntry: TimeEntry): TimeEntryResultDTO {
+    const duration = this.durationSrv.getDuration(timeEntry.start, timeEntry.end);
+    return {
+      ...timeEntry,
+      amount: timeEntry.billable ? this.amountSrv.calcAmount(duration) : 0,
+    };
   }
 }

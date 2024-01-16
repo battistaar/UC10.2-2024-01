@@ -20,10 +20,10 @@ describe('TimEntryResultFactory', () => {
       end: new Date('2024-01-10T11:00:00.000Z'),
       billable: true
     }
-    const factory = new TimeEntryResultFactory(durationSrv, amountSrv).getFactory();
+    const factory = new TimeEntryResultFactory(durationSrv, amountSrv);
     const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
     const durationSpy = jest.spyOn(durationSrv, 'getDuration').mockReturnValue(60);
-    const result = factory(entry);
+    const result = factory.getResultEntity(entry);
     expect(durationSpy).toHaveBeenCalledWith(entry.start, entry.end);
     expect(amountSpy).toHaveBeenCalledWith(60)
     expect(result.id).toBe(entry.id);
@@ -38,10 +38,10 @@ describe('TimEntryResultFactory', () => {
       end: new Date('2024-01-10T11:00:00.000Z'),
       billable: false
     }
-    const factory = new TimeEntryResultFactory(durationSrv, amountSrv).getFactory();
+    const factory = new TimeEntryResultFactory(durationSrv, amountSrv);
     const amountSpy = jest.spyOn(amountSrv, 'calcAmount');
     const durationSpy = jest.spyOn(durationSrv, 'getDuration').mockReturnValue(60);
-    const result = factory(entry);
+    const result = factory.getResultEntity(entry);
     expect(durationSpy).toHaveBeenCalledWith(entry.start, entry.end);
     expect(amountSpy).not.toHaveBeenCalled();
     expect(result.id).toBe(entry.id);

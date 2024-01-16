@@ -13,7 +13,7 @@ import { TimeEntryResultFactory } from './entities/time-entry-result.factory';
 describe('TimeEntryController', () => {
   let controller: TimeEntryController;
   let dataSource: TimeEntryMockDataSource;
-  let resultFactory: TimeEntryResultFactory;
+  let spyResultFactory: jest.SpyInstance;
 
   beforeEach(async () => {
     dataSource = new TimeEntryMockDataSource();
@@ -30,7 +30,8 @@ describe('TimeEntryController', () => {
     }).compile();
 
     controller = app.get<TimeEntryController>(TimeEntryController);
-    resultFactory = app.get<TimeEntryResultFactory>(TimeEntryResultFactory);
+    const resultFactory = app.get<TimeEntryResultFactory>(TimeEntryResultFactory);
+    spyResultFactory = jest.spyOn(resultFactory, 'getResultEntity');
   });
 
   describe('list',  () => {
@@ -52,11 +53,9 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-      const spyFactory = jest.fn().mockResolvedValue({});
-      jest.spyOn(resultFactory, 'getFactory').mockReturnValue(spyFactory);
       return controller.list().then(result => {
         for(let i = 0; i < records.length; i++) {
-          expect(spyFactory).toHaveBeenNthCalledWith(i+1, records[i]);
+          expect(spyResultFactory).toHaveBeenNthCalledWith(i+1, records[i]);
         }
         expect(result.length).toBe(records.length);
       })
@@ -82,10 +81,9 @@ describe('TimeEntryController', () => {
         }
       ];
       dataSource.setRecords(records);
-      const spyFactory = jest.fn().mockResolvedValue({});
-      jest.spyOn(resultFactory, 'getFactory').mockReturnValue(spyFactory);
+      spyResultFactory.mockReturnValue({});
       return controller.detail(records[1].id.toString()).then(result => {
-        expect(spyFactory).toHaveBeenCalledWith(records[1]);
+        expect(spyResultFactory).toHaveBeenCalledWith(records[1]);
         expect(result).toStrictEqual({});
       })
     });
@@ -114,10 +112,9 @@ describe('TimeEntryController', () => {
         end: new Date('2024-01-10T11:00:00.000Z'),
         billable: true
       }
-      const spyFactory = jest.fn().mockResolvedValue({});
-      jest.spyOn(resultFactory, 'getFactory').mockReturnValue(spyFactory);
+      spyResultFactory.mockReturnValue({});
       return controller.create(record).then(result =>{
-        expect(spyFactory).toHaveBeenCalled();
+        expect(spyResultFactory).toHaveBeenCalled();
         expect(result).toStrictEqual({});
       })
     });

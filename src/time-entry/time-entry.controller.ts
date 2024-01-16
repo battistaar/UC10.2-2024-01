@@ -24,9 +24,8 @@ export class TimeEntryController {
   async list(): Promise<CalculatedTimeEntry[]> {
     const list = await this.dataSorce.list();
 
-    const resultFactory = this.resultFactory.getFactory();
     return list.map((e) => {
-      return resultFactory(e);
+      return this.resultFactory.getResultEntity(e);
     });
   }
 
@@ -36,16 +35,13 @@ export class TimeEntryController {
     if (!record) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    const resultFactory = this.resultFactory.getFactory();
-    return resultFactory(record);
+    return this.resultFactory.getResultEntity(record);
   }
 
   @Post()
   @UsePipes(new ValidationPipe({transform: true}))
   async create(@Body() createTimeEntryDTO: CreateTimeEntryDTO) {
     const record = await this.dataSorce.add(createTimeEntryDTO);
-    const resultFactory = this.resultFactory.getFactory();
-
-    return resultFactory(record);
+    return this.resultFactory.getResultEntity(record);
   }
 }
