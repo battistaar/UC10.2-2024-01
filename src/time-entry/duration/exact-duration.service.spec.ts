@@ -2,7 +2,7 @@ import { ExactTimeEntryDurationService } from "./exact-duration.service";
 
 describe('ExactTimeEntryDurationService', () => {
   let service: ExactTimeEntryDurationService;
-  beforeEach(() => {
+  beforeAll(() => {
     service = new ExactTimeEntryDurationService();
   });
 

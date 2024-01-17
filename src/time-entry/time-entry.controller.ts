@@ -13,12 +13,14 @@ import { CalculatedTimeEntry } from './time-entry.entity';
 import { CreateTimeEntryDTO } from './time-entry.dto';
 import { TimeEntryDataSource } from './datasource/datasource.service';
 import { TimeEntryDurationService } from './duration/duration.service';
+import { TimeEntryAmountService } from './amount/amount.service';
 
 @Controller('time-entries')
 export class TimeEntryController {
   constructor(
     protected readonly dataSource: TimeEntryDataSource,
-    protected readonly durationSrv: TimeEntryDurationService
+    protected readonly durationSrv: TimeEntryDurationService,
+    protected readonly amountSrv: TimeEntryAmountService
   ) {}
 
   @Get()
@@ -29,7 +31,7 @@ export class TimeEntryController {
       const duration = this.durationSrv.getDuration(e.start, e.end);
       return {
         ...e,
-        amount: e.billable ? duration * 60 : 0,
+        amount: e.billable ? this.amountSrv.calcAmount(duration) : 0,
       };
     });
   }
@@ -43,7 +45,7 @@ export class TimeEntryController {
     const duration = this.durationSrv.getDuration(record.start, record.end);
     return {
       ...record,
-      amount: record.billable ? duration * 60 : 0,
+      amount: record.billable ? this.amountSrv.calcAmount(duration) : 0,
     };
   }
 
@@ -55,7 +57,7 @@ export class TimeEntryController {
     const duration = this.durationSrv.getDuration(record.start, record.end);
     return {
       ...record,
-      amount: record.billable ? duration * 60 : 0,
+      amount: record.billable ? this.amountSrv.calcAmount(duration) : 0,
     };
   }
 }
