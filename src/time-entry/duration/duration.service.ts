@@ -1,12 +1,12 @@
+import { Injectable } from "@nestjs/common";
+
+@Injectable()
 export abstract class TimeEntryDurationService {
 
-  abstract getDuration(start: Date, end: Date): number;
+  protected abstract calcDuration(millis: number): number;
 
-  // abstract calcDuration(milliseconds: number): number;
-
-  // getDuration(start: Date, end: Date) {
-  //   const millis = end.getTime() - start.getTime();
-  //   const adjustedValue = this.calcDuration(millis);
-  //   return adjustedValue;
-  // }
+  getDuration(start: Date, end: Date): number {
+    const millis = end.getTime() - start.getTime();
+    return this.calcDuration(millis);
+  }
 }

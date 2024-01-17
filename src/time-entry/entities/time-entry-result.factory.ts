@@ -6,16 +6,15 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class TimeEntryResultFactory {
-  constructor(
-    protected readonly durationSrv: TimeEntryDurationService,
-    protected readonly amountSrv: TimeEntryAmountService
-  ) {}
 
-  getResultEntity(timeEntry: TimeEntry): TimeEntryResultDTO {
-    const duration = this.durationSrv.getDuration(timeEntry.start, timeEntry.end);
-    return {
-      ...timeEntry,
-      amount: timeEntry.billable ? this.amountSrv.calcAmount(duration) : 0,
-    };
+  getFactory(durationSrv: TimeEntryDurationService, amountSrv: TimeEntryAmountService) {
+    return (timeEntry: TimeEntry): TimeEntryResultDTO => {
+      const duration = durationSrv.getDuration(timeEntry.start, timeEntry.end);
+      return {
+        ...timeEntry,
+        amount: timeEntry.billable ? amountSrv.calcAmount(duration) : 0,
+      };
+    }
   }
+  
 }
