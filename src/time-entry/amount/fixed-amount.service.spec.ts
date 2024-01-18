@@ -3,7 +3,7 @@ import { FixedAmountService } from "./fixed-amount.service";
 describe('FixedAmountService', () => {
   let amountSrv: FixedAmountService;
   beforeAll(() => {
-    amountSrv = new FixedAmountService();
+    amountSrv = new FixedAmountService(60);
   });
 
   it('should return 30', () => {

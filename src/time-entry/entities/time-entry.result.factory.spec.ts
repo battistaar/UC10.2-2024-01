@@ -9,7 +9,7 @@ describe('TimEntryResultFactory', () => {
   let amountSrv: TimeEntryAmountService;
   let durationSrv: TimeEntryDurationService;
   beforeEach(() => {
-    amountSrv = new FixedAmountService();
+    amountSrv = new FixedAmountService(60);
     durationSrv = new ExactTimeEntryDurationService();
   })
   it('should reuturn a billable result', () => {

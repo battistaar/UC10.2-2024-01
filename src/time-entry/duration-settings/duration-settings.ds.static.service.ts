@@ -9,7 +9,7 @@ export class DurationSettingsStaticDataSource extends DurationSettingsDataSource
     super();
   }
 
-  async getDurationSettings(): Promise<DurationSettings> {
+  async getDurationSettings(userId: string): Promise<DurationSettings> {
     return {
       strategy: this.strategy
     };

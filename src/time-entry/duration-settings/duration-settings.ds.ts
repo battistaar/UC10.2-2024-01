@@ -3,5 +3,5 @@ import { DurationSettings } from "./duration-settings.entity";
 
 @Injectable()
 export abstract class DurationSettingsDataSource {
-  abstract getDurationSettings(): Promise<DurationSettings>;
+  abstract getDurationSettings(userId: string): Promise<DurationSettings>;
 }
