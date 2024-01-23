@@ -21,7 +21,9 @@ describe('TimeEntryController', () => {
 
   beforeEach(async () => {
     dataSource = new TimeEntryMockDataSource();
-    spyResult = jest.fn().mockResolvedValue({});
+    spyResult = jest.fn((_: string, arg: TimeEntry | TimeEntry[]) => {
+      return Array.isArray(arg) ? arg.map(() => ({})) : {};
+    });
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TimeEntryController],
       providers: [{
@@ -58,32 +60,22 @@ describe('TimeEntryController', () => {
     })
 
     it('LIST: should call the settings provider', async () => {
-      try {
-        await controller.list();
-        for(let i = 0; i < records.length; i++) {
-          expect(spyResult).toHaveBeenNthCalledWith(i+1, records[i]);
-        }
-      } catch (_) {}
-      finally {
-      }
+      await controller.list();
+      expect(spyResult).toHaveBeenCalledWith('test', records);
     })
     it('DETAIL: should call the settings provider', async () => {
-      try {
-        await controller.detail(records[0].id.toString());
-        expect(spyResult).toHaveBeenCalledWith(records[0]);
-      } catch (_) {}
+      await controller.detail(records[0].id.toString());
+      expect(spyResult).toHaveBeenCalledWith('test', records[0]);
     })
     it('CREATE: should calculate result', async () => {
-      try {
-        const record = {
-          description: 'Test1',
-          start: new Date('2024-01-10T10:00:00.000Z'),
-          end: new Date('2024-01-10T11:00:00.000Z'),
-          billable: true
-        }
-        await controller.create(record);
-        expect(spyResult).toHaveBeenCalled();
-      } catch (_) {}
+      const record = {
+        description: 'Test1',
+        start: new Date('2024-01-10T10:00:00.000Z'),
+        end: new Date('2024-01-10T11:00:00.000Z'),
+        billable: true
+      }
+      await controller.create(record);
+      expect(spyResult).toHaveBeenCalled();
     })
   })
 

@@ -70,4 +70,34 @@ describe('TimeEntryResultCalculator', () => {
     const result = await resultCalculator.calcResult('test', record);
     expect(result.amount).toBe(0);
   })
+
+  it('should handle arrays', async () => {
+    const records = [
+      {
+        id: new Types.ObjectId().toString(),
+        description: 'Test1',
+        start: new Date('2024-01-10T10:00:00.000Z'),
+        end: new Date('2024-01-10T11:00:00.000Z'),
+        billable: true
+      },
+      {
+        id: new Types.ObjectId().toString(),
+        description: 'Test1',
+        start: new Date('2024-01-10T10:00:00.000Z'),
+        end: new Date('2024-01-10T10:05:00.000Z'),
+        billable: true
+      },
+      {
+        id: new Types.ObjectId().toString(),
+        description: 'Test1',
+        start: new Date('2024-01-10T10:00:00.000Z'),
+        end: new Date('2024-01-10T11:00:00.000Z'),
+        billable: false
+      }
+    ];
+    const result = await resultCalculator.calcResult('test', records);
+    expect(result[0].amount).toBe(60);
+    expect(result[1].amount).toBe(0);
+    expect(result[2].amount).toBe(0);
+  })
 })

@@ -26,10 +26,7 @@ export class TimeEntryController {
   async list(): Promise<TimeEntryResultDTO[]> {
     const list = await this.dataSource.list();
 
-    const promises = list.map((e) => {
-      return this.resultCalculator.calcResult(FAKE_USERID, e);
-    });
-    return Promise.all(promises);
+    return this.resultCalculator.calcResult(FAKE_USERID, list);
   }
 
   @Get(':id')

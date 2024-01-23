@@ -11,7 +11,8 @@ export class DurationSettingsStaticDataSource extends DurationSettingsDataSource
 
   async getDurationSettings(userId: string): Promise<DurationSettings> {
     return {
-      strategy: this.strategy
+      strategy: this.strategy,
+      roundValue: 30
     };
   }
 
