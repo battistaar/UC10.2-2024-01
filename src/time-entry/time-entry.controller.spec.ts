@@ -11,19 +11,17 @@ import { DurationSettingsDataSource } from './duration-settings/duration-setting
 import { DurationStrategySelectorService } from './duration/duration-strategy-selector.service';
 import { ExactTimeEntryDurationService } from './duration/exact-duration.service';
 import { DurationSettingsStaticDataSource, STATIC_DURATION_STRATEGY } from './duration-settings/duration-settings.ds.static.service';
+import { TimeEntryResultCalculator } from './entities/result-calculator.service';
 
 describe('TimeEntryController', () => {
   let controller: TimeEntryController;
   let dataSource: TimeEntryMockDataSource;
-  let spyFactory: jest.SpyInstance;
   let spyResult: jest.Mock;
-  let spyDurationSettings: jest.SpyInstance;
-  let spyStrategyProvider: jest.SpyInstance;
   
 
   beforeEach(async () => {
     dataSource = new TimeEntryMockDataSource();
-
+    spyResult = jest.fn().mockResolvedValue({});
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TimeEntryController],
       providers: [{
@@ -31,29 +29,14 @@ describe('TimeEntryController', () => {
         useValue: dataSource
       },
       {provide: TimeEntryAmountService, useClass: FixedAmountService},
-      TimeEntryResultFactory,
-      {provide: STATIC_DURATION_STRATEGY, useValue: 'exact'},
-      {provide: DurationSettingsDataSource, useClass: DurationSettingsStaticDataSource},
-      DurationStrategySelectorService
+      {provide: TimeEntryResultCalculator, useValue: {calcResult: spyResult} }
     ],
     }).compile();
 
     controller = app.get<TimeEntryController>(TimeEntryController);
-    
-    const durationSettings = app.get<DurationSettingsDataSource>(DurationSettingsDataSource);
-    spyDurationSettings = jest.spyOn(durationSettings, 'getDurationSettings');
-
-    const durationStrategyProvider = app.get<DurationStrategySelectorService>(DurationStrategySelectorService);
-    durationStrategyProvider.addStrategy('exact', new ExactTimeEntryDurationService());
-    spyStrategyProvider = jest.spyOn(durationStrategyProvider, 'getStrategy');
-
-    const resultFactory = app.get<TimeEntryResultFactory>(TimeEntryResultFactory);
-    spyResult = jest.fn().mockResolvedValue({});
-    spyFactory = jest.spyOn(resultFactory, 'getFactory');
-    spyFactory.mockReturnValue(spyResult);
   });
 
-  describe('duration strategy', () => {
+  describe('result calculator', () => {
     const records: TimeEntry[] = [
       {
         id: new Types.ObjectId().toString(),
@@ -77,20 +60,20 @@ describe('TimeEntryController', () => {
     it('LIST: should call the settings provider', async () => {
       try {
         await controller.list();
+        for(let i = 0; i < records.length; i++) {
+          expect(spyResult).toHaveBeenNthCalledWith(i+1, records[i]);
+        }
       } catch (_) {}
       finally {
-        expect(spyDurationSettings).toHaveBeenCalled();
       }
     })
     it('DETAIL: should call the settings provider', async () => {
       try {
         await controller.detail(records[0].id.toString());
+        expect(spyResult).toHaveBeenCalledWith(records[0]);
       } catch (_) {}
-      finally {
-        expect(spyDurationSettings).toHaveBeenCalled();
-      }
     })
-    it('CREATE: should call the settings provider', async () => {
+    it('CREATE: should calculate result', async () => {
       try {
         const record = {
           description: 'Test1',
@@ -99,46 +82,8 @@ describe('TimeEntryController', () => {
           billable: true
         }
         await controller.create(record);
+        expect(spyResult).toHaveBeenCalled();
       } catch (_) {}
-      finally {
-        expect(spyDurationSettings).toHaveBeenCalled();
-      }
-    })
-
-    it('LIST: should request the right duration strategy', async () => {
-      spyDurationSettings.mockResolvedValue({strategy: 'test'});
-      try {
-        await controller.list();
-      } catch(_) {}
-      finally {
-        expect(spyStrategyProvider).toHaveBeenCalledWith('test');
-      }
-    })
-
-    it('DETAIL: should request the right duration strategy', async () => {
-      spyDurationSettings.mockResolvedValue({strategy: 'test'});
-      try {
-        await controller.detail(records[0].id.toString());
-      } catch(_) {}
-      finally {
-        expect(spyStrategyProvider).toHaveBeenCalledWith('test');
-      }
-    })
-
-    it('CREATE: should request the right duration strategy', async () => {
-      spyDurationSettings.mockResolvedValue({strategy: 'test'});
-      try {
-        const record = {
-          description: 'Test1',
-          start: new Date('2024-01-10T10:00:00.000Z'),
-          end: new Date('2024-01-10T11:00:00.000Z'),
-          billable: true
-        }
-        await controller.create(record);
-      } catch(_) {}
-      finally {
-        expect(spyStrategyProvider).toHaveBeenCalledWith('test');
-      }
     })
   })
 
@@ -162,10 +107,6 @@ describe('TimeEntryController', () => {
       ];
       dataSource.setRecords(records);
       return controller.list().then(result => {
-        expect(spyFactory).toHaveBeenCalled();
-        for(let i = 0; i < records.length; i++) {
-          expect(spyResult).toHaveBeenNthCalledWith(i+1, records[i]);
-        }
         expect(result.length).toBe(records.length);
       })
     });
@@ -191,8 +132,6 @@ describe('TimeEntryController', () => {
       ];
       dataSource.setRecords(records);
       return controller.detail(records[1].id.toString()).then(result => {
-        expect(spyFactory).toHaveBeenCalled();
-        expect(spyResult).toHaveBeenCalledWith(records[1]);
         expect(result).toStrictEqual({});
       })
     });
@@ -222,8 +161,6 @@ describe('TimeEntryController', () => {
         billable: true
       }
       return controller.create(record).then(result =>{
-        expect(spyFactory).toHaveBeenCalled();
-        expect(spyResult).toHaveBeenCalled();
         expect(result).toStrictEqual({});
       })
     });

@@ -14,6 +14,9 @@ import { RoundedDurationService } from "./duration/rounded-duration.service";
 import { AmountSettingsStatiDataSource, STATIC_HOURLY_RATE } from "./amount-settings/amount-settings.ds.static";
 import { AmountSettingsDataSource } from "./amount-settings/amount-settings.ds";
 import { AmountServiceProvider } from "./amount/amount-service.provider";
+import { TimeEntryAmountService } from "./amount/amount.service";
+import { FixedAmountService } from "./amount/fixed-amount.service";
+import { TimeEntryResultCalculator } from "./entities/result-calculator.service";
 
 @Module({
   imports: [MongooseModule.forFeature([{name: TimeEntry.name, schema: TimeEntrySchema}])],
@@ -40,7 +43,9 @@ import { AmountServiceProvider } from "./amount/amount-service.provider";
     },
     {provide: STATIC_HOURLY_RATE, useValue: 50},
     {provide: AmountSettingsDataSource, useClass: AmountSettingsStatiDataSource},
-    AmountServiceProvider
+    AmountServiceProvider,
+    {provide: TimeEntryAmountService, useClass: FixedAmountService},
+    TimeEntryResultCalculator
   ]
 })
 export class TimeEntryModule {}
