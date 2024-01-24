@@ -1,12 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { TimeEntryResultDTO } from "./time-entry.dto";
 import { TimeEntry } from "./time-entry.schema";
 import { FixedAmountService } from "../amount/fixed-amount.service";
-import { DurationSettingsDataSource } from "../duration-settings/duration-settings.ds";
-import { DurationStrategySelectorService } from "../duration/duration-strategy-selector.service";
+import { DurationSettingsDataSource } from "@modules/duration/duration-settings";
+import { DurationStrategySelectorService, TimeEntryDurationService } from "@modules/duration/duration-strategy";
 import { TimeEntryResultFactory } from "./time-entry.result.factory";
 import { AmountSettingsDataSource } from "../amount-settings/amount-settings.ds";
-import { TimeEntryDurationService } from "../duration/duration.service";
 import { TimeEntryAmountService } from "../amount/amount.service";
 import { AmountSettings } from "../amount-settings/amount-settings.entity";
 
@@ -42,7 +41,7 @@ export class TimeEntryResultCalculator {
     const durationSrv = await this.getDurationService(userId);
 
     const amountSettings = await this.amountSettings.getAmountSettings(userId);
-    
+
     const results: TimeEntryResultDTO[] = [];
     for(const item of items) {
       const amountSrv = this.getAmountService(amountSettings, durationSrv, item);

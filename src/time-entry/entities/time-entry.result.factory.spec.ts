@@ -1,7 +1,6 @@
+import { ExactTimeEntryDurationService, TimeEntryDurationService } from "@modules/duration/duration-strategy";
 import { TimeEntryAmountService } from "../amount/amount.service";
 import { FixedAmountService } from "../amount/fixed-amount.service"
-import { TimeEntryDurationService } from "../duration/duration.service";
-import { ExactTimeEntryDurationService } from "../duration/exact-duration.service";
 import { TimeEntryResultFactory } from "./time-entry.result.factory";
 import { Types } from 'mongoose';
 
