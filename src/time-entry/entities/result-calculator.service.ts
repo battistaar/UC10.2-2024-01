@@ -5,9 +5,8 @@ import { FixedAmountService } from "../amount/fixed-amount.service";
 import { DurationSettingsDataSource } from "@modules/duration/duration-settings";
 import { DurationStrategySelectorService, TimeEntryDurationService } from "@modules/duration/duration-strategy";
 import { TimeEntryResultFactory } from "./time-entry.result.factory";
-import { AmountSettingsDataSource } from "../amount-settings/amount-settings.ds";
 import { TimeEntryAmountService } from "../amount/amount.service";
-import { AmountSettings } from "../amount-settings/amount-settings.entity";
+import { AmountSettings, AmountSettingsDataSource } from "@modules/amount/amount-settings";
 
 @Injectable()
 export class TimeEntryResultCalculator {

@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TimeEntryModule } from './time-entry/time-entry.module';
 import { DurationSettingsDataSource, DurationSettingsModule, DurationSettingsStaticDataSource, STATIC_DURATION_STRATEGY } from '@modules/duration/duration-settings';
 import { DurationStrategyModule, ExactTimeEntryDurationService, RoundedDurationService, TimeEntryDurationService } from '@modules/duration/duration-strategy';
+import { AmountSettingsDataSource, AmountSettingsModule, AmountSettingsStatiDataSource, STATIC_HOURLY_RATE, STATIC_MIN_BILLABLE_DURATION } from '@modules/amount/amount-settings';
 
 @Module({
   imports: [
@@ -13,6 +14,11 @@ import { DurationStrategyModule, ExactTimeEntryDurationService, RoundedDurationS
     DurationSettingsModule.forRoot([
       {provide: STATIC_DURATION_STRATEGY, useValue: 'exact'},
       {provide: DurationSettingsDataSource, useClass: DurationSettingsStaticDataSource}
+    ]),
+    AmountSettingsModule.forRoot([
+      {provide: STATIC_HOURLY_RATE, useValue: 60},
+      {provide: STATIC_MIN_BILLABLE_DURATION, useValue: 10},
+      {provide: AmountSettingsDataSource, useClass: AmountSettingsStatiDataSource}
     ]),
     DurationStrategyModule,
     TimeEntryModule

@@ -1,16 +1,16 @@
 import { DynamicModule, Module, Provider } from "@nestjs/common";
-import { DurationSettingsDataSource } from "./duration-settings.ds";
+import { AmountSettingsDataSource } from "./amount-settings.ds";
 
 @Module({})
-export class DurationSettingsModule {
+export class AmountSettingsModule {
   static forRoot(providers: Provider[], global = true): DynamicModule {
     return {
       global,
-      module: DurationSettingsModule,
+      module: AmountSettingsModule,
       providers:[
         ...providers
       ],
-      exports: [DurationSettingsDataSource]
+      exports: [AmountSettingsDataSource]
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { TimeEntryAmountService } from "./amount.service";
 import { FixedAmountService } from "./fixed-amount.service";
-import { AmountSettingsDataSource } from "../amount-settings/amount-settings.ds";
+import { AmountSettingsDataSource } from "@modules/amount/amount-settings";
 
 @Injectable()
 export class AmountServiceProvider {

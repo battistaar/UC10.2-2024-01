@@ -1,10 +1,9 @@
 import { Types } from "mongoose";
-import { AmountSettingsDataSource } from "../amount-settings/amount-settings.ds";
-import { AmountSettingsStatiDataSource } from "../amount-settings/amount-settings.ds.static";
 import { TimeEntryResultCalculator } from "./result-calculator.service";
 import { TimeEntryResultFactory } from "./time-entry.result.factory";
 import { DurationSettingsDataSource, DurationSettingsStaticDataSource } from "@modules/duration/duration-settings";
 import { DurationStrategySelectorService, ExactTimeEntryDurationService } from "@modules/duration/duration-strategy";
+import { AmountSettingsDataSource, AmountSettingsStatiDataSource } from "@modules/amount/amount-settings";
 
 describe('TimeEntryResultCalculator', () => {
   const resultFactorySrv: TimeEntryResultFactory = new TimeEntryResultFactory();
