@@ -26,6 +26,9 @@ export class CreateUserDTO {
   @ValidateNested()
   @Type(() => UserSettingsDTO)
   settings: UserSettingsDTO;
+
+  @IsString()
+  company: string;
 }
 
 export class UserResultDTO extends User {

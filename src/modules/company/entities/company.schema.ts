@@ -1,0 +1,44 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+import { CompanyAmountSettings } from './company.entities';
+import { DurationSettings, DurationStrategy } from '@modules/duration/duration-settings';
+
+export type CompanyDocument = HydratedDocument<Company>;
+
+@Schema({_id: false})
+class CAmountSettings implements CompanyAmountSettings {
+  @Prop()
+  minDuration: number;
+
+  @Prop()
+  hourlyRate: number;
+}
+
+const AmountSettingsSchema = SchemaFactory.createForClass(CAmountSettings);
+
+@Schema({_id: false})
+class CDurationSettings implements DurationSettings {
+
+  @Prop({type: String, enum: ['exact', 'rounded']})
+  strategy: DurationStrategy;
+
+  @Prop()
+  roundValue: number;
+}
+const DurationSettingsSchema = SchemaFactory.createForClass(CDurationSettings);
+
+@Schema()
+export class Company {
+  id: string;
+
+  @Prop()
+  name: string;
+
+  @Prop({type: { amount: AmountSettingsSchema, duration: DurationSettingsSchema}, _id: false})
+  settings: {
+    amount: CompanyAmountSettings,
+    duration: DurationSettings
+  };
+}
+
+export const CompanySchema = SchemaFactory.createForClass(Company);

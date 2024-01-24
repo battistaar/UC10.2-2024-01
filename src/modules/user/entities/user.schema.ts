@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UserAmountSettings } from './user.entities';
+import { Schema as MongooseSchema } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -18,6 +19,9 @@ export class User {
 
   @Prop()
   name: string;
+
+  @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Company'})
+  company: string;
 
   @Prop({type: { amount: AmountSettingsSchema}, _id: false})
   settings: {

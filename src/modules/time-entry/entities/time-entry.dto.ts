@@ -16,6 +16,12 @@ export class CreateTimeEntryDTO {
 
   @IsBoolean()
   billable: boolean;
+
+  @IsString()
+  user: string;
+
+  @IsString()
+  project: string;
 }
 
 export class TimeEntryResultDTO extends TimeEntry {

@@ -40,14 +40,18 @@ describe('TimeEntryController', () => {
         description: 'Test1',
         start: new Date(),
         end: new Date(),
-        billable: true
+        billable: true,
+        user: 'testUser',
+        project: 'testProject'
       },
       {
         id: new Types.ObjectId().toString(),
         description: 'Test2',
         start: new Date(),
         end: new Date(),
-        billable: true
+        billable: true,
+        user: 'testUser',
+        project: 'testProject'
       }
     ];
     beforeEach(() => {
@@ -67,7 +71,9 @@ describe('TimeEntryController', () => {
         description: 'Test1',
         start: new Date('2024-01-10T10:00:00.000Z'),
         end: new Date('2024-01-10T11:00:00.000Z'),
-        billable: true
+        billable: true,
+        user: 'testUser',
+        project: 'testProject'
       }
       await controller.create(record);
       expect(spyResult).toHaveBeenCalled();
@@ -82,14 +88,18 @@ describe('TimeEntryController', () => {
           description: 'Test1',
           start: new Date(),
           end: new Date(),
-          billable: true
+          billable: true,
+          user: 'testUser',
+          project: 'testProject'
         },
         {
           id: new Types.ObjectId().toString(),
           description: 'Test2',
           start: new Date(),
           end: new Date(),
-          billable: true
+          billable: true,
+          user: 'testUser',
+          project: 'testProject'
         }
       ];
       dataSource.setRecords(records);
@@ -107,14 +117,18 @@ describe('TimeEntryController', () => {
           description: 'Test1',
           start: new Date(),
           end: new Date(),
-          billable: true
+          billable: true,
+          user: 'testUser',
+          project: 'testProject'
         },
         {
           id: new Types.ObjectId().toString(),
           description: 'Test2',
           start: new Date(),
           end: new Date(),
-          billable: true
+          billable: true,
+          user: 'testUser',
+          project: 'testProject'
         }
       ];
       dataSource.setRecords(records);
@@ -130,7 +144,9 @@ describe('TimeEntryController', () => {
           description: 'Test1',
           start: new Date('2024-01-10T10:00:00.000Z'),
           end: new Date('2024-01-10T11:00:00.000Z'),
-          billable: false
+          billable: false,
+          user: 'testUser',
+          project: 'testProject'
         }
       ];
       dataSource.setRecords(records);
@@ -145,7 +161,9 @@ describe('TimeEntryController', () => {
         description: 'Test1',
         start: new Date('2024-01-10T10:00:00.000Z'),
         end: new Date('2024-01-10T11:00:00.000Z'),
-        billable: true
+        billable: true,
+        user: 'testUser',
+        project: 'testProject'
       }
       return controller.create(record).then(result =>{
         expect(result).toStrictEqual({});

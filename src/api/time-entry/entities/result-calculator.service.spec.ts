@@ -26,7 +26,9 @@ describe('TimeEntryResultCalculator', () => {
       description: 'Test1',
       start: new Date('2024-01-10T10:00:00.000Z'),
       end: new Date('2024-01-10T11:00:00.000Z'),
-      billable: true
+      billable: true,
+      user: 'testUser',
+      project: 'testProject'
     }
     const result = await resultCalculator.calcResult('test', record);
     expect(result.amount).toBe(60);
@@ -38,7 +40,9 @@ describe('TimeEntryResultCalculator', () => {
       description: 'Test1',
       start: new Date('2024-01-10T10:00:00.000Z'),
       end: new Date('2024-01-10T10:30:00.000Z'),
-      billable: true
+      billable: true,
+      user: 'testUser',
+      project: 'testProject'
     }
     const result = await resultCalculator.calcResult('test', record);
     expect(result.amount).toBe(30);
@@ -50,7 +54,9 @@ describe('TimeEntryResultCalculator', () => {
       description: 'Test1',
       start: new Date('2024-01-10T10:00:00.000Z'),
       end: new Date('2024-01-10T10:00:00.000Z'),
-      billable: true
+      billable: true,
+      user: 'testUser',
+      project: 'testProject'
     }
     const result = await resultCalculator.calcResult('test', record);
     expect(result.amount).toBe(0);
@@ -62,7 +68,9 @@ describe('TimeEntryResultCalculator', () => {
       description: 'Test1',
       start: new Date('2024-01-10T10:00:00.000Z'),
       end: new Date('2024-01-10T10:05:00.000Z'),
-      billable: true
+      billable: true,
+      user: 'testUser',
+      project: 'testProject'
     }
     const result = await resultCalculator.calcResult('test', record);
     expect(result.amount).toBe(0);
@@ -75,21 +83,27 @@ describe('TimeEntryResultCalculator', () => {
         description: 'Test1',
         start: new Date('2024-01-10T10:00:00.000Z'),
         end: new Date('2024-01-10T11:00:00.000Z'),
-        billable: true
+        billable: true,
+        user: 'testUser',
+        project: 'testProject'
       },
       {
         id: new Types.ObjectId().toString(),
         description: 'Test1',
         start: new Date('2024-01-10T10:00:00.000Z'),
         end: new Date('2024-01-10T10:05:00.000Z'),
-        billable: true
+        billable: true,
+        user: 'testUser',
+        project: 'testProject'
       },
       {
         id: new Types.ObjectId().toString(),
         description: 'Test1',
         start: new Date('2024-01-10T10:00:00.000Z'),
         end: new Date('2024-01-10T11:00:00.000Z'),
-        billable: false
+        billable: false,
+        user: 'testUser',
+        project: 'testProject'
       }
     ];
     const result = await resultCalculator.calcResult('test', records);

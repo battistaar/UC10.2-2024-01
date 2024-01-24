@@ -18,7 +18,9 @@ describe('TimEntryResultFactory', () => {
       description: 'Test1',
       start: new Date('2024-01-10T10:00:00.000Z'),
       end: new Date('2024-01-10T11:00:00.000Z'),
-      billable: true
+      billable: true,
+      user: 'testUser',
+      project: 'testProject'
     }
     const factory = new TimeEntryResultFactory();
     const amountSpy = jest.spyOn(amountSrv, 'calcAmount').mockReturnValue(1);
@@ -42,7 +44,9 @@ describe('TimEntryResultFactory', () => {
       description: 'Test1',
       start: new Date('2024-01-10T10:00:00.000Z'),
       end: new Date('2024-01-10T11:00:00.000Z'),
-      billable: false
+      billable: false,
+      user: 'testUser',
+      project: 'testProject'
     }
     const factory = new TimeEntryResultFactory();
     const amountSpy = jest.spyOn(amountSrv, 'calcAmount');

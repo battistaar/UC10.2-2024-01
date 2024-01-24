@@ -12,6 +12,8 @@ import { DurationSettingsDataSource, DurationSettingsModule, DurationSettingsSta
 import { UserApiModule } from '@api/user/user-api.module';
 import { ProjectApiModule } from '@api/project/project-api.module';
 import { TimeEntryApiModule } from '@api/time-entry/time-entry.module';
+import { CompanyDataSource, CompanyModule, CompanyMongoDataSource } from '@modules/company';
+import { CompanyApiModule } from '@api/company/company-api.module';
 
 @Module({
   imports: [
@@ -30,6 +32,9 @@ import { TimeEntryApiModule } from '@api/time-entry/time-entry.module';
     ProjectModule.forRoot([
       {provide: ProjectDataSource, useClass: ProjectMongoDataSource}
     ], true),
+    CompanyModule.forRoot([
+      {provide: CompanyDataSource, useClass: CompanyMongoDataSource}
+    ], true),
     DurationStrategyModule.forRoot({
       'exact': new ExactTimeEntryDurationService(),
       'rounded': new RoundedDurationService()
@@ -39,6 +44,7 @@ import { TimeEntryApiModule } from '@api/time-entry/time-entry.module';
     ], true),
     UserApiModule,
     ProjectApiModule,
+    CompanyApiModule,
     TimeEntryApiModule
   ],
   controllers: [AppController],
