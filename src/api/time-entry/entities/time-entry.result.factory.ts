@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { TimeEntry } from "./time-entry.schema";
-import { TimeEntryResultDTO } from "./time-entry.dto";
 import { TimeEntryAmountService } from "../amount/amount.service";
 import { TimeEntryDurationService } from "@modules/duration/duration-strategy";
+import { TimeEntry, TimeEntryResultDTO } from "@modules/time-entry";
 
 @Injectable()
 export class TimeEntryResultFactory {

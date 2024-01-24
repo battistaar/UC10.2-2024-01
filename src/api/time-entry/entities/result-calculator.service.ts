@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { TimeEntryResultDTO } from "./time-entry.dto";
-import { TimeEntry } from "./time-entry.schema";
 import { FixedAmountService } from "../amount/fixed-amount.service";
 import { DurationSettingsDataSource } from "@modules/duration/duration-settings";
 import { DurationStrategySelectorService, TimeEntryDurationService } from "@modules/duration/duration-strategy";
 import { TimeEntryResultFactory } from "./time-entry.result.factory";
 import { TimeEntryAmountService } from "../amount/amount.service";
 import { AmountSettings, AmountSettingsDataSource } from "@modules/amount/amount-settings";
+import { TimeEntry, TimeEntryResultDTO } from "@modules/time-entry";
 
 @Injectable()
 export class TimeEntryResultCalculator {

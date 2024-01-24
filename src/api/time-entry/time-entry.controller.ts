@@ -9,9 +9,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateTimeEntryDTO, TimeEntryResultDTO } from './entities/time-entry.dto';
-import { TimeEntryDataSource } from './datasource/datasource.service';
 import { TimeEntryResultCalculator } from './entities/result-calculator.service';
+import { TimeEntryDataSource, TimeEntryResultDTO, CreateTimeEntryDTO } from '@modules/time-entry';
 
 const FAKE_USERID = 'test';
 
