@@ -8,6 +8,12 @@ import { DurationStrategyModule, ExactTimeEntryDurationService, RoundedDurationS
 import { AmountSettingsDataSource, AmountSettingsModule, AmountSettingsStatiDataSource, STATIC_HOURLY_RATE, STATIC_MIN_BILLABLE_DURATION } from '@modules/amount/amount-settings';
 import { TimeEntryDataSource, TimeEntryModule, TimeEntryMongoDataSource } from '@modules/time-entry';
 import { TimeEntryApiModule } from '@api/time-entry';
+import { UserDataSource, UserModule, UserMongoDataSource } from '@modules/user';
+import { UserApiModule } from '@api/user';
+import { CompanyDataSource, CompanyModule, CompanyMongoDataSource } from '@modules/company';
+import { CompanyApiModule } from '@api/company';
+import { ProjectDataSource, ProjectModule, ProjectMongoDataSource } from '@modules/project';
+import { ProjectApiModule } from '@api/project';
 
 @Module({
   imports: [
@@ -25,7 +31,19 @@ import { TimeEntryApiModule } from '@api/time-entry';
     TimeEntryModule.forRoot([
       {provide: TimeEntryDataSource, useClass: TimeEntryMongoDataSource}
     ]),
-    TimeEntryApiModule
+    UserModule.forRoot([
+      {provide: UserDataSource, useClass: UserMongoDataSource}
+    ]),
+    CompanyModule.forRoot([
+      {provide: CompanyDataSource, useClass: CompanyMongoDataSource}
+    ]),
+    ProjectModule.forRoot([
+      {provide: ProjectDataSource, useClass: ProjectMongoDataSource}
+    ]),
+    TimeEntryApiModule,
+    UserApiModule,
+    CompanyApiModule,
+    ProjectApiModule
   ],
   controllers: [AppController],
   providers: [

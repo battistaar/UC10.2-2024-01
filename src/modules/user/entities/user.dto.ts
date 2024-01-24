@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import { IsDefined, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { UserAmountSettings } from "./user.entity";
+import { User } from "./user.schema";
 
 class AmountSettingsDTO implements UserAmountSettings {
   @IsOptional()
@@ -29,3 +30,5 @@ export class CreateUserDTO {
   @IsString()
   company: string;
 }
+
+export class UserResultDTO extends User {}
