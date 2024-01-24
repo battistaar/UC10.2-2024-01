@@ -1,3 +1,4 @@
+import { TimeEntryResultCalculator } from './entities/result-calculator.service';
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { TimeEntry, TimeEntrySchema } from "./entities/time-entry.schema";
@@ -40,7 +41,8 @@ import { AmountServiceProvider } from "./amount/amount-service.provider";
     },
     {provide: STATIC_HOURLY_RATE, useValue: 50},
     {provide: AmountSettingsDataSource, useClass: AmountSettingsStatiDataSource},
-    AmountServiceProvider
+    AmountServiceProvider,
+    TimeEntryResultCalculator
   ]
 })
 export class TimeEntryModule {}

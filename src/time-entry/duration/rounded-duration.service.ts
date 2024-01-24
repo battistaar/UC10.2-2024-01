@@ -6,8 +6,8 @@ export class RoundedDurationService extends TimeEntryDurationService {
   }
   
   protected calcDuration(millis: number): number {
-    const minutes = millis / (1000 * 60);
-    const rounded = Math.round(minutes / this.roundValue) * this.roundValue;
-    return rounded / 60;
+    const roundMillis = this.roundValue * 1000 * 60;
+    const rounded = Math.round(millis / roundMillis) * roundMillis;
+    return rounded;
   }
-} 
+}
