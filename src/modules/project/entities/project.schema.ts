@@ -6,7 +6,7 @@ import { Schema as MongooseSchema } from 'mongoose';
 
 export type ProjectDocument = HydratedDocument<Project>;
 
-@Schema()
+@Schema({toObject: {virtuals: true}})
 export class Project {
   id: string;
 

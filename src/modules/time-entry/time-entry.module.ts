@@ -12,7 +12,9 @@ export class TimeEntryModule {
       imports: [
         MongooseModule.forFeature([{name: TimeEntry.name, schema: TimeEntrySchema}])
       ],
-      providers: [...providers],
+      providers: [
+        ...providers
+      ],
       exports: [TimeEntryDataSource]
     }
   }

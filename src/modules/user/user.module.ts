@@ -12,7 +12,9 @@ export class UserModule {
       imports: [
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}])
       ],
-      providers: [...providers],
+      providers: [
+        ...providers
+      ],
       exports: [UserDataSource]
     }
   }

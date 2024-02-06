@@ -12,8 +12,12 @@ export class CompanyModule {
       imports: [
         MongooseModule.forFeature([{name: Company.name, schema: CompanySchema}])
       ],
-      providers: [...providers],
-      exports: [CompanyDataSource]
+      providers: [
+        ...providers
+      ],
+      exports: [
+        CompanyDataSource
+      ]
     }
   }
 }

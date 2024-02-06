@@ -13,7 +13,7 @@ class AmountSettings implements UserAmountSettings {
 
 const AmountSettingsSchema = SchemaFactory.createForClass(AmountSettings);
 
-@Schema()
+@Schema({toObject: {virtuals: true}})
 export class User {
   id: string;
 

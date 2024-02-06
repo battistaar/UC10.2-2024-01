@@ -3,5 +3,5 @@ import { AmountSettings } from "./amount-settings.entity";
 
 @Injectable()
 export abstract class AmountSettingsDataSource {
-  abstract getAmountSettings(userId: string): Promise<AmountSettings>;
+  abstract getAmountSettings(entityId: string): Promise<AmountSettings>;
 }

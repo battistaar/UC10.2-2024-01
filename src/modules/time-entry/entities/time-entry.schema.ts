@@ -13,7 +13,7 @@ class AmountSettings implements TimeEntryAmountSettings {
 
 const AmountSettingsSchema = SchemaFactory.createForClass(AmountSettings);
 
-@Schema()
+@Schema({toObject: {virtuals: true}})
 export class TimeEntry {
   id: string;
 

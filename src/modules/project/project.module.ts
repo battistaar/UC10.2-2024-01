@@ -13,8 +13,12 @@ export class ProjectModule {
       imports: [
         MongooseModule.forFeature([{name: Project.name, schema: ProjectSchema}])
       ],
-      providers: [...providers],
-      exports: [ProjectDataSource]
+      providers: [
+        ...providers
+      ],
+      exports: [
+        ProjectDataSource
+      ]
     }
   }
 }

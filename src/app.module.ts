@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DurationSettingsDataSource, DurationSettingsModule, DurationSettingsStaticDataSource, STATIC_DURATION_STRATEGY } from '@modules/duration/duration-settings';
 import { DurationStrategyModule, ExactTimeEntryDurationService, RoundedDurationService } from '@modules/duration/duration-strategy';
-import { AmountSettingsDataSource, AmountSettingsModule, AmountSettingsStatiDataSource, STATIC_HOURLY_RATE, STATIC_MIN_BILLABLE_DURATION } from '@modules/amount/amount-settings';
+import { AmountSettingsDataSource, AmountSettingsModule, EntityAmountSettingsDataSource, STATIC_HOURLY_RATE, STATIC_MIN_BILLABLE_DURATION } from '@modules/amount/amount-settings';
 import { TimeEntryDataSource, TimeEntryModule, TimeEntryMongoDataSource } from '@modules/time-entry';
 import { TimeEntryApiModule } from '@api/time-entry';
 import { UserDataSource, UserModule, UserMongoDataSource } from '@modules/user';
@@ -22,11 +22,6 @@ import { ProjectApiModule } from '@api/project';
       {provide: STATIC_DURATION_STRATEGY, useValue: 'exact'},
       {provide: DurationSettingsDataSource, useClass: DurationSettingsStaticDataSource}
     ]),
-    AmountSettingsModule.forRoot([
-      {provide: STATIC_HOURLY_RATE, useValue: 60},
-      {provide: STATIC_MIN_BILLABLE_DURATION, useValue: 10},
-      {provide: AmountSettingsDataSource, useClass: AmountSettingsStatiDataSource}
-    ]),
     DurationStrategyModule,
     TimeEntryModule.forRoot([
       {provide: TimeEntryDataSource, useClass: TimeEntryMongoDataSource}
@@ -40,6 +35,7 @@ import { ProjectApiModule } from '@api/project';
     ProjectModule.forRoot([
       {provide: ProjectDataSource, useClass: ProjectMongoDataSource}
     ]),
+    AmountSettingsModule,
     TimeEntryApiModule,
     UserApiModule,
     CompanyApiModule,

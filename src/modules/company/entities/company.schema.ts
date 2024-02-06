@@ -27,7 +27,7 @@ class CDurationSettings implements CompanyDurationSettings {
 
 const DurationSettingsSchema = SchemaFactory.createForClass(CDurationSettings);
 
-@Schema()
+@Schema({toObject: {virtuals: true}})
 export class Company {
   id: string;
 
