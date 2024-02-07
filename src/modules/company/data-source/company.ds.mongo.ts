@@ -2,27 +2,26 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Company } from "../entities/company.schema";
-import { CompanyDataSource } from "./company.ds.service";
 import { CreateCompanyDTO } from "../entities/company.dto";
+import { BaseMongoDataSoruce } from "@modules/utils/base-mongo.ds";
 
 @Injectable()
-export class CompanyMongoDataSource extends CompanyDataSource {
+export class CompanyMongoDataSource extends BaseMongoDataSoruce<Company, CreateCompanyDTO> {
   constructor(
     @InjectModel(Company.name) private readonly companyModel: Model<Company>,
   ) {
     super();
   }
 
-  async list(): Promise<Company[]> {
-    return this.companyModel.find().then(records => records.map(r => r.toObject()));
+  protected async performList() {
+    return this.companyModel.find();
   }
 
-  async get(id: string): Promise<Company> {
-    return this.companyModel.findById(id).then(result => result.toObject());
+  protected async performGet(id: string) {
+    return this.companyModel.findById(id);
   }
 
-  async create(data: CreateCompanyDTO): Promise<Company> {
-    const record = await this.companyModel.create(data);
-    return record.toObject();
+  protected async performCreate(data: CreateCompanyDTO) {
+    return this.companyModel.create(data);
   }
 }

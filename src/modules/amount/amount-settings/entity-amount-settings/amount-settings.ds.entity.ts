@@ -29,6 +29,7 @@ export class EntityAmountSettingsDataSource extends AmountSettingsDataSource {
     const company = await this.companyDs.get(entry.company);
     const project = await this.projectDs.get(entry.project);
     const user = await this.userDs.get(entry.user);
+    
     const projectUserSettings = project.settings.amount.userSettings.find(i => i.userId.toString() === entry.user.toString());
     const projectSettings = projectUserSettings ? projectUserSettings.settings : {};
 

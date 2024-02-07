@@ -4,25 +4,25 @@ import { Model } from "mongoose";
 import { User } from "../entities/user.schema";
 import { UserDataSource } from "./user.ds.service";
 import { CreateUserDTO } from "../entities/user.dto";
+import { BaseMongoDataSoruce } from "@modules/utils/base-mongo.ds";
 
 @Injectable()
-export class UserMongoDataSource extends UserDataSource {
+export class UserMongoDataSource extends BaseMongoDataSoruce<User, CreateUserDTO> {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {
     super();
   }
 
-  async list(): Promise<User[]> {
-    return this.userModel.find().then(records => records.map(r => r.toObject()));
+  protected async performList() {
+    return this.userModel.find();
   }
 
-  async get(id: string): Promise<User> {
-    return this.userModel.findById(id).then(result => result.toObject());
+  protected async performGet(id: string) {
+    return this.userModel.findById(id);
   }
 
-  async create(data: CreateUserDTO): Promise<User> {
-    const record = await this.userModel.create(data);
-    return record.toObject();
+  protected async performCreate(data: CreateUserDTO) {
+    return this.userModel.create(data);
   }
 }
