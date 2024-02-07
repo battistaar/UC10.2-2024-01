@@ -4,25 +4,25 @@ import { Model } from "mongoose";
 import { Project } from "../entities/project.schema";
 import { ProjectDataSource } from "./project.ds.service";
 import { CreateProjectDTO } from "../entities/project.dto";
+import { BaseMongoDatasource } from "@modules/utils/base-mongo-datasource";
 
 @Injectable()
-export class ProjectMongoDataSource extends ProjectDataSource {
+export class ProjectMongoDataSource extends BaseMongoDatasource<Project, CreateProjectDTO> {
   constructor(
     @InjectModel(Project.name) private readonly projectModel: Model<Project>,
   ) {
     super();
   }
 
-  async list(): Promise<Project[]> {
-    return this.projectModel.find().then(records => records.map(r => r.toObject()));
+  protected async performList() {
+    return this.projectModel.find();
   }
 
-  async get(id: string): Promise<Project> {
-    return this.projectModel.findById(id).then(result => result.toObject());
+  protected async performGet(id: string) {
+    return this.projectModel.findById(id);
   }
 
-  async create(data: CreateProjectDTO): Promise<Project> {
-    const record = await this.projectModel.create(data);
-    return record.toObject();
+  protected async performCreate(data: CreateProjectDTO) {
+    return this.projectModel.create(data);
   }
 }

@@ -14,6 +14,8 @@ import { CompanyDataSource, CompanyModule, CompanyMongoDataSource } from '@modul
 import { CompanyApiModule } from '@api/company';
 import { ProjectDataSource, ProjectModule, ProjectMongoDataSource } from '@modules/project';
 import { ProjectApiModule } from '@api/project';
+import mongoose from 'mongoose';
+mongoose.set('debug', true);
 
 @Module({
   imports: [

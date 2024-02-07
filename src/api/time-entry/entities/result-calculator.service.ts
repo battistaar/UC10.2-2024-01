@@ -5,8 +5,15 @@ import { DurationStrategySelectorService, TimeEntryDurationService } from "@modu
 import { TimeEntryResultFactory } from "./time-entry.result.factory";
 import { TimeEntryAmountService } from "../amount/amount.service";
 import { AmountSettings, AmountSettingsDataSource } from "@modules/amount/amount-settings";
-import { TimeEntry, TimeEntryResultDTO } from "@modules/time-entry";
-import { TIME_ENTRY_AMOUNT_SETTINGS_FACTORY, TimeEntryAmountSettingsFactory } from "@modules/amount/amount-settings/entity-amount-settings/time-entry-amount-settings.ds";
+import { TimeEntry, TimeEntryDataSource, TimeEntryResultDTO } from "@modules/time-entry";
+import { TIME_ENTRY_AMOUNT_SETTINGS_FACTORY, TimeEntryAmountSettings, TimeEntryAmountSettingsFactory } from "@modules/amount/amount-settings/entity-amount-settings/time-entry-amount-settings.ds";
+import { CompanyDataSource } from "@modules/company";
+import { UserDataSource } from "@modules/user";
+import { CachableDataSource } from "@modules/utils/cachable-datasource";
+import { CompanyAmountSettings } from "@modules/amount/amount-settings/entity-amount-settings/compant-amount-settings.ds";
+import { UserAmountSettings } from "@modules/amount/amount-settings/entity-amount-settings/user-amount-settings.ds";
+import { ProjectAmountSettings, ProjectAmountSettingsAdapter } from "@modules/amount/amount-settings/entity-amount-settings/project-amount-settings.ds";
+import { ProjectDataSource } from "@modules/project";
 
 @Injectable()
 export class TimeEntryResultCalculator {
@@ -15,8 +22,10 @@ export class TimeEntryResultCalculator {
     protected readonly durationStrategySelector: DurationStrategySelectorService,
     protected readonly resultFactorySrv: TimeEntryResultFactory,
     protected readonly amountSettings: AmountSettingsDataSource,
-    @Inject(TIME_ENTRY_AMOUNT_SETTINGS_FACTORY)
-    protected readonly timeEntrySettingsFactory: TimeEntryAmountSettingsFactory
+    protected readonly companyDs: CompanyDataSource,
+    protected readonly userDs: UserDataSource,
+    protected readonly projectDs: ProjectDataSource,
+    protected readonly timeEntryDs: TimeEntryDataSource
   ){ }
 
   protected async getDurationService(userId: string): Promise<TimeEntryDurationService> {
@@ -41,11 +50,23 @@ export class TimeEntryResultCalculator {
 
     const durationSrv = await this.getDurationService(userId);
 
-    
+    const companyCache = new CachableDataSource(this.companyDs);
+    const userCache = new CachableDataSource(this.userDs);
+    const projectCache = new CachableDataSource(this.projectDs);
+    const timeEntryCache = new CachableDataSource(this.timeEntryDs);
+    timeEntryCache.populateCache(items);
+
+    const company = new CompanyAmountSettings(companyCache);
+    const user = new UserAmountSettings(company, userCache, async entity => entity.company);
+    const baseProject = new ProjectAmountSettings(user, projectCache, async (_, userId) => userId);
+
     const results: TimeEntryResultDTO[] = [];
     for(const item of items) {
+      const project = new ProjectAmountSettingsAdapter(baseProject, item.user);
+      const amountSettingsDs = new TimeEntryAmountSettings(project, timeEntryCache, async entity => entity.project);
+
       // const amountSettings = await this.amountSettings.getAmountSettings(item.id);
-      const amountSettingsDs = this.timeEntrySettingsFactory.get(item.user);
+      // const amountSettingsDs = this.timeEntrySettingsFactory.get(item.user);
       const amountSettings = await amountSettingsDs.getAmountSettings(item.id);
       console.log(amountSettings);
       const amountSrv = this.getAmountService(amountSettings, durationSrv, item);
