@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { FixedAmountService } from "../amount/fixed-amount.service";
 import { DurationSettingsDataSource } from "@modules/duration/duration-settings";
 import { DurationStrategySelectorService, TimeEntryDurationService } from "@modules/duration/duration-strategy";
@@ -6,6 +6,7 @@ import { TimeEntryResultFactory } from "./time-entry.result.factory";
 import { TimeEntryAmountService } from "../amount/amount.service";
 import { AmountSettings, AmountSettingsDataSource } from "@modules/amount/amount-settings";
 import { TimeEntry, TimeEntryResultDTO } from "@modules/time-entry";
+import { TIME_ENTRY_AMOUNT_SETTINGS_FACTORY, TimeEntryAmountSettingsFactory } from "@modules/amount/amount-settings/entity-amount-settings/time-entry-amount-settings.ds";
 
 @Injectable()
 export class TimeEntryResultCalculator {
@@ -13,7 +14,9 @@ export class TimeEntryResultCalculator {
     protected readonly durationSettingsSrv: DurationSettingsDataSource,
     protected readonly durationStrategySelector: DurationStrategySelectorService,
     protected readonly resultFactorySrv: TimeEntryResultFactory,
-    protected readonly amountSettings: AmountSettingsDataSource
+    protected readonly amountSettings: AmountSettingsDataSource,
+    @Inject(TIME_ENTRY_AMOUNT_SETTINGS_FACTORY)
+    protected readonly timeEntrySettingsFactory: TimeEntryAmountSettingsFactory
   ){ }
 
   protected async getDurationService(userId: string): Promise<TimeEntryDurationService> {
@@ -41,7 +44,9 @@ export class TimeEntryResultCalculator {
     
     const results: TimeEntryResultDTO[] = [];
     for(const item of items) {
-      const amountSettings = await this.amountSettings.getAmountSettings(item.id);
+      // const amountSettings = await this.amountSettings.getAmountSettings(item.id);
+      const amountSettingsDs = this.timeEntrySettingsFactory.get(item.user);
+      const amountSettings = await amountSettingsDs.getAmountSettings(item.id);
       console.log(amountSettings);
       const amountSrv = this.getAmountService(amountSettings, durationSrv, item);
       const resultFactory = this.resultFactorySrv.getFactory(durationSrv, amountSrv);
